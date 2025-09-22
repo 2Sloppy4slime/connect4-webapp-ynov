@@ -26,8 +26,8 @@ color: #27ae60;
 .circle{
     width: 100px;
     height: 100px;
-    -webkit-border-radius: 25px;
-    -moz-border-radius: 25px;
-    border-radius: 25px;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
     background: red;
 }
