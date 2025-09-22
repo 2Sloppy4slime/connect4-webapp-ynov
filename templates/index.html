@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+    <html lang="fr">
+        <head>
+            <meta charset="UTF-8">
+            <title>Ma première application web !</title>
+            <link rel="stylesheet" href="/css/styles.css" />
+        </head>
+    <body>
+        <h1>PUISSANCE 4 TERRIFIANTE</h1>
+        <form action="/submit" method="POST">  
+            <label for="prenom">Entrez votre prénom :</label>
+            <input type="text" id="prenom" name="prenom" required />
+            <button type="submit">Envoyer</button>
+        </form>
+        <p>{{.Message}}</p>
+    </body>
