@@ -17,16 +17,18 @@ func main() {
 		tmpl.Execute(w, PageData{})
 
 	})
-	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			prenom := r.FormValue("prenom")
-			message := "Hello " + prenom + "!"
-			tmpl :=
-				template.Must(template.ParseFiles("templates/index.html"))
-			tmpl.Execute(w, PageData{Message: message})
-
-		}
-
-	})
+	http.HandleFunc("/submit", submit)
 	http.ListenAndServe(":8080", nil)
+}
+
+func submit(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		prenom := r.FormValue("prenom")
+		message := "Hello " + prenom + "!"
+		tmpl :=
+			template.Must(template.ParseFiles("templates/index.html"))
+		tmpl.Execute(w, PageData{Message: message})
+
+	}
+
 }
