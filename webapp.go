@@ -9,7 +9,7 @@ type PageData struct {
 	Message string
 }
 
-func main() {
+func main() { 
 	fs := http.FileServer(http.Dir("css"))
 	http.Handle("/css/", http.StripPrefix("/css/", fs))
 
