@@ -11,7 +11,7 @@ type PageData struct {
 }
 
 var a [7][6]int
-var turn bool
+var turn bool //false = red, true = yellow
 
 func main() {
 	turn = false
@@ -52,7 +52,7 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 	print("error ntm touche pas a mon code connard de tes morts")
 
 }
-func placepiece(x int) { //false = red, true = yellow
+func placepiece(x int) {
 	for i := 0; i <= 7; i++ {
 
 		if a[x][i] == 0 {
