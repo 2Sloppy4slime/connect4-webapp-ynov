@@ -1,28 +1,3 @@
-body {
-font-family: Arial, sans-serif;
-padding: 20px;
-background-color: aquamarine;
-}
-
-h1 {
-color: #2c3e50;
-}
-
-form {
-margin-top: 20px;
-}
-
-input,
-button {
-padding: 8px;
-margin-right: 10px;
-}
-
-p {
-margin-top: 20px;
-font-size: 18px;
-color: #27ae60;
-}
 .circle{
     width: 100px;
     height: 100px;
@@ -31,12 +6,4 @@ color: #27ae60;
     border-radius: 100px;
     background: red;
     position: absolute;
-}
-
-.grille{
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-gap: 10px;
-    grid-auto-rows: minmax(100px, auto);
-    background-color: cornflowerblue;
 }
