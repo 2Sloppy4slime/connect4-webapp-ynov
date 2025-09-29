@@ -51,7 +51,7 @@
             </form>
 
             <!-- Plateau 7 x 6 (coordonnées en data-*) -->
-            <div class="board" role="grid" aria-label="Plateau 7 colonnes par 6 lignes">
+            <div class="board" role="grid" aria-label="Plateau 7 colonnes par 6 lignes" id="tab">
                 <!-- Ligne 1 -->
                 <div class="cell" data-col="1" data-row="1"></div>
                 <div class="cell" data-col="2" data-row="1"></div>
@@ -107,6 +107,24 @@
     <footer class="site-footer">
         <small>Puissance 4 — Ynov Projet.</small>
     </footer>
-</body>
 
+    <script>
+        function changeColor() {
+            const pos = fetch('/pos')
+                        .then(response => response.text())
+                    fetch('/color')
+                        .then(response => response.text())
+                        .then(color => {
+                            document.getElementById("tab").rows[pos[1]].cells[pos[0]].style.backgroundColor = color;
+                        })
+                        .catch(err => console.error('Error fetching color:', err));
+                }
+
+        btns = document.querySelectorAll('button[class=drop-btn]')
+        btns.forEach(btn => {
+	    btn.addEventListener("click", changeColor())
+        });
+    </script>
+
+</body>
 </html>
