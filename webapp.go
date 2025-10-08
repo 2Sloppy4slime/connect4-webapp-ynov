@@ -72,7 +72,9 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 	x, err := strconv.Atoi(r.FormValue("x"))
 	if err == nil {
 		placepiece(x)
-		return
+		if horizontalcheck(x, turn) || verticalcheck(x, turn) || diagcheck(x, x, turn) {
+			print("y'a qqun qui a gagfnéé")
+		}
 	}
 	print("error ntm touche pas a mon code connard de tes morts")
 
@@ -164,5 +166,13 @@ func verticalcheck(x int, col bool) bool {
 			acc++
 		}
 	}
+	return false
+}
+
+func diagcheck(x, y int, col bool) bool {
+	//chercher le coin  haut gauche de la diag
+	//descendre en passcheck
+	//cherche rle coin haut droit de la diag
+	//descendre en passcheck
 	return false
 }
