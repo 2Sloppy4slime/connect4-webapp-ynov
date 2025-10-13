@@ -170,9 +170,79 @@ func verticalcheck(x int, col bool) bool {
 }
 
 func diagcheck(x, y int, col bool) bool {
-	//chercher le coin  haut gauche de la diag
-	//descendre en passcheck
-	//cherche rle coin haut droit de la diag
-	//descendre en passcheck
+	check, check2 := x, y //chercher le coin  haut gauche de la diag
+	for check > 0 || check2 < 6 {
+		check--
+		check2++
+	}
+	acc := 0
+	red := false
+	for check < 7 || check2 > 0 {
+		if acc == 4 {
+			if red == col {
+				return true
+			} else {
+				return false
+			}
+		}
+		if a[check][check2] == 0 {
+			acc = 0
+		}
+		if acc == 0 { //début d'acc
+			switch a[check][check2] {
+			case 2:
+				acc++
+				red = true
+
+			case 1:
+				acc++
+				red = false
+			}
+		} else if (red && a[check][check2] == 1) || (!red && a[check][check2] == 2) { //reset d'acc
+			acc = 1
+			red = !red
+		} else if (!red && a[check][check2] == 1) || (red && a[check][check2] == 2) {
+			acc++
+		}
+		check++
+		check2--
+	}
+	check, check2 = x, y
+	for check < 7 || check2 < 6 {
+		check++
+		check2++
+	}
+	acc = 0
+	red = false
+	for check > 0 || check2 > 0 {
+		if acc == 4 {
+			if red == col {
+				return true
+			} else {
+				return false
+			}
+		}
+		if a[check][check2] == 0 {
+			acc = 0
+		}
+		if acc == 0 { //début d'acc
+			switch a[check][check2] {
+			case 2:
+				acc++
+				red = true
+
+			case 1:
+				acc++
+				red = false
+			}
+		} else if (red && a[check][check2] == 1) || (!red && a[check][check2] == 2) { //reset d'acc
+			acc = 1
+			red = !red
+		} else if (!red && a[check][check2] == 1) || (red && a[check][check2] == 2) {
+			acc++
+		}
+		check--
+		check2--
+	}
 	return false
 }
