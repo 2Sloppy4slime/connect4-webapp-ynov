@@ -5,13 +5,15 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 var lastrow int
 var lastcol int
 
 type PageData struct {
-	Message string
+	Message   string
+	BoardHTML template.HTML
 }
 
 type Color struct {
@@ -30,15 +32,13 @@ func main() {
 	}
 	fs := http.FileServer(http.Dir("css"))
 	http.Handle("/css/", http.StripPrefix("/css/", fs))
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("templates/index.html"))
-		tmpl.Execute(w, PageData{})
 
-	})
+	http.HandleFunc("/", serveIndex)
 	http.HandleFunc("/submit", submit)
 	http.HandleFunc("/turn", DoTurn)
 	http.HandleFunc("/color", givecolor)
 	http.HandleFunc("/pos", getpos)
+	http.HandleFunc("/reset", reset)
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -69,36 +69,36 @@ func givecolor(w http.ResponseWriter, r *http.Request) {
 }
 
 func DoTurn(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	x, err := strconv.Atoi(r.FormValue("x"))
 	if err == nil {
 		placepiece(x)
-		if horizontalcheck(x, turn) || verticalcheck(x, turn) || diagcheck(x, x, turn) {
+		if horizontalcheck(lastrow, turn) || verticalcheck(x, turn) || diagcheck(x, lastrow, turn) {
 			print("y'a qqun qui a gagfnéé")
 		}
 	}
 	print("error ntm touche pas a mon code connard de tes morts")
-
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
 func placepiece(x int) {
-	for i := 0; i <= 6; i++ {
+	for i := 0; i < 6; i++ {
 
 		if a[x][i] == 0 {
+			lastcol = x
+			lastrow = i
 			if turn {
-				lastcol = x
-				lastrow = i
 				a[x][i] = 1
-				turn = !turn
-				return
 			} else {
-				lastcol = x
-				lastrow = i
 				a[x][i] = 2
-				turn = !turn
-				return
 			}
+			turn = !turn
+			return
 		}
 	}
-	//pas pu placer le pion :(
 }
 
 func horizontalcheck(y int, col bool) bool {
@@ -170,79 +170,113 @@ func verticalcheck(x int, col bool) bool {
 }
 
 func diagcheck(x, y int, col bool) bool {
-	check, check2 := x, y //chercher le coin  haut gauche de la diag
-	for check > 0 || check2 < 6 {
+	check, check2 := x, y
+	for check > 0 && check2 < 5 {
 		check--
 		check2++
 	}
-	acc := 0
-	red := false
-	for check < 7 || check2 > 0 {
+	acc, red := 0, false
+	for check >= 0 && check < 7 && check2 >= 0 && check2 < 6 {
 		if acc == 4 {
-			if red == col {
-				return true
-			} else {
-				return false
-			}
+			return red == col
 		}
-		if a[check][check2] == 0 {
+		v := a[check][check2]
+		if v == 0 {
 			acc = 0
-		}
-		if acc == 0 { //début d'acc
-			switch a[check][check2] {
-			case 2:
+		} else if acc == 0 {
+			if v == 2 {
 				acc++
 				red = true
-
-			case 1:
+			} else if v == 1 {
 				acc++
 				red = false
 			}
-		} else if (red && a[check][check2] == 1) || (!red && a[check][check2] == 2) { //reset d'acc
+		} else if (red && v == 1) || (!red && v == 2) {
 			acc = 1
 			red = !red
-		} else if (!red && a[check][check2] == 1) || (red && a[check][check2] == 2) {
+		} else if (!red && v == 1) || (red && v == 2) {
 			acc++
 		}
 		check++
 		check2--
 	}
+	if acc == 4 {
+		return red == col
+	}
+
 	check, check2 = x, y
-	for check < 7 || check2 < 6 {
+	for check < 6 && check2 < 5 {
 		check++
 		check2++
 	}
-	acc = 0
-	red = false
-	for check > 0 || check2 > 0 {
+	acc, red = 0, false
+	for check >= 0 && check < 7 && check2 >= 0 && check2 < 6 {
 		if acc == 4 {
-			if red == col {
-				return true
-			} else {
-				return false
-			}
+			return red == col
 		}
-		if a[check][check2] == 0 {
+		v := a[check][check2]
+		if v == 0 {
 			acc = 0
-		}
-		if acc == 0 { //début d'acc
-			switch a[check][check2] {
-			case 2:
+		} else if acc == 0 {
+			if v == 2 {
 				acc++
 				red = true
-
-			case 1:
+			} else if v == 1 {
 				acc++
 				red = false
 			}
-		} else if (red && a[check][check2] == 1) || (!red && a[check][check2] == 2) { //reset d'acc
+		} else if (red && v == 1) || (!red && v == 2) {
 			acc = 1
 			red = !red
-		} else if (!red && a[check][check2] == 1) || (red && a[check][check2] == 2) {
+		} else if (!red && v == 1) || (red && v == 2) {
 			acc++
 		}
 		check--
 		check2--
 	}
+	if acc == 4 {
+		return red == col
+	}
+
 	return false
+}
+
+func renderBoard() template.HTML {
+	var sb strings.Builder
+
+	for row := 5; row >= 0; row-- {
+		for col := 0; col < 7; col++ {
+			v := a[col][row]
+			cls := "cell"
+			if v == 1 {
+				cls += " p1"
+			}
+			if v == 2 {
+				cls += " p2"
+			}
+			fmt.Fprintf(&sb, `<div class="%s" data-col="%d" data-row="%d"></div>`, cls, col, row)
+		}
+	}
+	return template.HTML(sb.String())
+}
+
+func serveIndex(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/index.html"))
+	data := PageData{
+		Message:   "",
+		BoardHTML: renderBoard(),
+	}
+	_ = tmpl.Execute(w, data)
+}
+
+func reset(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		for x := 0; x < 7; x++ {
+			for y := 0; y < 6; y++ {
+				a[x][y] = 0
+			}
+		}
+		turn = false
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
