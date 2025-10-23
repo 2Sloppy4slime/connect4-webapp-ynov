@@ -20,6 +20,11 @@ type Color struct {
 	Color string
 }
 
+type WinData struct {
+	Winner string
+}
+
+var lastWinner string
 var a [7][6]int
 var turn bool //false = yellow, true = red
 
@@ -39,6 +44,7 @@ func main() {
 	http.HandleFunc("/color", givecolor)
 	http.HandleFunc("/pos", getpos)
 	http.HandleFunc("/reset", reset)
+	http.HandleFunc("/win", winPage)
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -76,10 +82,18 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 	x, err := strconv.Atoi(r.FormValue("x"))
 	if err == nil {
 		placepiece(x)
-		if horizontalcheck(lastrow, turn) || verticalcheck(x, turn) || diagcheck(x, lastrow, turn) {
-			print("y'a qqun qui a gagfnéé")
+		won := horizontalcheck(lastrow, !turn) || verticalcheck(x, !turn) || diagcheck(x, lastrow, !turn)
+		if won {
+			if a[lastcol][lastrow] == 1 {
+				lastWinner = "Rouge"
+			} else {
+				lastWinner = "Jaune"
+			}
+			http.Redirect(w, r, "/win", http.StatusSeeOther)
+			return
 		}
 	}
+	turn = !turn
 	print("error ntm touche pas a mon code connard de tes morts")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -95,7 +109,9 @@ func placepiece(x int) {
 			} else {
 				a[x][i] = 2
 			}
-			turn = !turn
+
+			printBoard()
+
 			return
 		}
 	}
@@ -279,4 +295,19 @@ func reset(w http.ResponseWriter, r *http.Request) {
 		turn = false
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func winPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/win.html"))
+	_ = tmpl.Execute(w, WinData{Winner: lastWinner})
+}
+
+func printBoard() {
+	for row := 5; row >= 0; row-- {
+		for col := 0; col < 7; col++ {
+			fmt.Printf("%d ", a[col][row])
+		}
+		fmt.Println()
+	}
+	fmt.Println()
 }
