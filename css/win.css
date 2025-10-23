@@ -1,0 +1,101 @@
+.win-layout{
+  min-height: calc(100vh - 160px);
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 24px 16px 32px;
+  display: grid;
+  place-items: center;
+}
+
+.win-card{
+  width: min(680px, 94vw);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  box-shadow: 0 22px 48px -18px rgba(0,0,0,.18);
+  border: 1px solid rgba(0,0,0,.05);
+  text-align: center;
+}
+
+.win-header{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.win-emoji{ font-size: 1.6rem; }
+.win-title{
+  margin: 0;
+  font-size: 1.9rem;
+  letter-spacing: .2px;
+}
+
+.win-subtitle{
+  margin: 6px 0 16px;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.win-winner{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 10px 0 22px;
+}
+
+.win-winner .dot{
+  width: 16px; height: 16px; border-radius: 50%;
+  display: inline-block;
+}
+
+.win-winner-name{
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.win-actions{
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.btn-primary, .btn-ghost{
+  appearance: none;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: .2px;
+  transition: transform .04s ease, box-shadow .18s ease, background .18s ease;
+}
+
+/* Bouton principal */
+.btn-primary{
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 10px 24px -10px rgba(37, 99, 235, .55);
+}
+.btn-primary:hover{ background: #1d4ed8; transform: translateY(-1px); }
+.btn-primary:active{ transform: translateY(0); }
+
+.btn-ghost{
+  background: #f3f4f6;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 0 8px 20px -12px rgba(0,0,0,.18);
+}
+.btn-ghost:hover{ background: #e5e7eb; transform: translateY(-1px); }
+.btn-ghost:active{ transform: translateY(0); }
+
+@media (max-width: 520px){
+  .win-title{ font-size: 1.6rem; }
+  .win-winner-name{ font-size: 1.1rem; }
+  .btn-primary, .btn-ghost{ width: 100%; }
+}
