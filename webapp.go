@@ -94,7 +94,7 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	turn = !turn
-	print("error ntm touche pas a mon code connard de tes morts")
+	print("error ntm touche pas a mon code connard de tes morts\n")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
