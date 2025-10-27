@@ -1,172 +1,208 @@
 :root{
-  --bg:#f5f7fb;
-  --text:#1f2937;
-  --muted:#6b7280;
+    --bg: #f5f7fb;
+    --text: #1f2937;
+    --muted: #6b7280;
 
-  --board:#1e3a8a;           /* bleu plateau */
-  --board-shadow:rgba(2,6,23,.35);
-  --hole:#ffffff;            /* trous */
-  --p1:#e11d48;              /* rouge */
-  --p2:#f59e0b;              /* jaune */
+    --board: #1e3a8a;        /* bleu plateau */
+    --board-shadow: rgba(2, 6, 23, 0.35);
+    --hole: #ffffff;         /* trous blancs */
+    --p1: #e11d48;           /* rouge */
+    --p2: #f59e0b;           /* jaune */
 
-  --cell:84px;               /* taille case (responsive plus bas) */
-  --gap:10px;
-
-  /* Boutons */
-  --btn-radius:12px;
-  --btn-pad-y:10px;
-  --btn-pad-x:14px;
-  --btn-font:600;
-  --btn-shadow:0 10px 24px -10px rgba(0,0,0,.18);
-
-  --primary:#2563eb;
-  --primary-hover:#1d4ed8;
-  --surface:#ffffff;
-  --surface-2:#f3f4f6;
-  --surface-3:#e5e7eb;
-
-  --cell-board: var(--cell);   /* taille case pour le plateau */
-  --gap-board:  var(--gap);    /* espacement interne du plateau */
+    --cell: 84px;            /* taille d’une case */
+    --gap: 10px;
 }
 
-*{ box-sizing:border-box; }
-html,body{ height:100%; margin:0; }
+*{ box-sizing: border-box; }
+
+html, body{
+    height: 100%;
+    margin: 0;
+}
+
 body{
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  line-height:1.4;
-  padding:16px;
-  display:grid;
-  grid-template-rows:auto 1fr auto;
-  justify-items:center;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.4;
+    padding: 16px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    justify-items: center;
 }
 
-/* Header / footer */
-.site-header{ text-align:center; margin-bottom:8px; }
-.site-header h1{ margin:.2rem 0 .1rem; font-size:1.8rem; }
-.subtitle{ margin:0; color:var(--muted); font-size:.95rem; }
-.site-footer{ margin-top:16px; color:var(--muted); }
+.site-header{
+    text-align: center;
+    margin-bottom: 8px;
+}
+.site-header h1{
+    margin: 0.2rem 0 0.1rem;
+    font-size: 1.8rem;
+}
+.subtitle{
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
 
-/* Layout page jeu */
 .game{
-  display:grid;
-  grid-template-columns:260px minmax(0,1fr);
-  gap:24px;
-  width:min(1100px,100%);
-  align-items:start;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 24px;
+    width: min(1100px, 100%);
+    align-items: start;
 }
 
 .panel{
-  background:#fff;
-  border-radius:14px;
-  padding:16px;
-  box-shadow:0 10px 24px -8px rgba(0,0,0,.12);
-  position:sticky; top:16px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 10px 24px -8px rgba(0,0,0,0.12);
+    position: sticky;
+    top: 16px;
 }
 
 .status{
-  display:flex; align-items:center; gap:10px; margin-bottom:8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
 }
-.label{ font-weight:600; }
-
-.play-controls{ 
-  margin-left: var(--gap);
+.label{
+    font-weight: 600;
 }
-
-/* Pastilles couleur — global */
-.dot, .player-dot{
-  width:14px; height:14px; border-radius:50%; display:inline-block;
+.player-dot{
+    width: 14px; height: 14px; border-radius: 50%;
+    display: inline-block;
 }
-.player1{ background:var(--p1); }
-.player2{ background:var(--p2); }
+.player1{ background: var(--p1); }
+.player2{ background: var(--p2); }
 
 .message{
-  min-height:1.2em; margin:8px 0 16px; color:var(--text); font-weight:600;
+    min-height: 1.2em;
+    margin: 8px 0 16px;
+    color: var(--text);
+    font-weight: 600;
 }
 
-/* Légende */
-.legend{ display:grid; gap:6px; margin-bottom:14px; color:var(--muted); }
-.legend .dot{ width:12px; height:12px; vertical-align:-1px; margin-right:8px; }
-
-/* ============ Boutons unifiés ============ */
-.btn{
-  appearance:none; border:1px solid transparent; border-radius:var(--btn-radius);
-  padding:var(--btn-pad-y) var(--btn-pad-x);
-  cursor:pointer; font-weight:var(--btn-font);
-  letter-spacing:.2px;
-  transition:transform .04s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
-  box-shadow:var(--btn-shadow);
-  background:var(--surface-2); color:#111827; border-color:var(--surface-3);
+.legend{
+    display: grid;
+    gap: 6px;
+    margin-bottom: 14px;
+    color: var(--muted);
 }
-.btn:hover{ background:var(--surface-3); transform:translateY(-1px); }
-.btn:active{ transform:translateY(0); }
-
-.btn-primary{
-  background:var(--primary); color:#fff; border-color:transparent;
-  box-shadow:0 10px 24px -10px rgba(37,99,235,.55);
+.legend .dot{
+    width: 12px; height: 12px; border-radius: 50%;
+    display: inline-block;
+    vertical-align: -1px;
+    margin-right: 8px;
 }
-.btn-primary:hover{ background:var(--primary-hover); }
+.legend .player1{ background: var(--p1); }
+.legend .player2{ background: var(--p2); }
 
-.btn-secondary{
-  background:var(--surface-2); color:#111827; border-color:var(--surface-3);
-}
-
-.btn-ghost{
-  background:var(--surface-2); color:#111827; border-color:var(--surface-3);
-  text-decoration:none; display:inline-block;
+.reset-form .btn-secondary {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background: #f3f4f6;
+    color: #111827;
+    cursor: pointer;
+    font-family: "Courier New", Courier, monospace; /* 👈 police modifiée */
+    font-weight: bold;
+    letter-spacing: 0.5px;
 }
 
-/* Spécifique "déposer un pion" (rangée de 7) */
+.reset-form .btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+/* Zone plateau + boutons colonnes */
+.board-area{
+    display: grid;
+    gap: 10px;
+    justify-items: center;
+}
+
+/* Rangée de boutons de dépôt */
 .play-controls{
-  display:grid; grid-template-columns:repeat(7, var(--cell)); gap:var(--gap);
+    display: grid;
+    grid-template-columns: repeat(7, var(--cell));
+    gap: var(--gap);
 }
 .drop-btn{
-  /* on réutilise la base .btn + petit look "pavé" */
-  background:var(--surface-2); border-color:var(--surface-3);
-  padding:8px 0; font-size:1.05rem; box-shadow:0 4px 10px -6px rgba(0,0,0,.25);
+    appearance: none;
+    border: none;
+    border-radius: 10px;
+    background: #e5e7eb;
+    padding: 8px 0;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px -6px rgba(0,0,0,0.25);
 }
-.drop-btn:hover{ background:#d1d5db; }
-
-/* Zone plateau */
-.board-area{ display:grid; gap:10px; justify-items:center; }
-.board{
-  /* IMPORTANT: le plateau utilise ses propres variables */
-  display:grid;
-  grid-template-columns:repeat(7, var(--cell-board));
-  grid-template-rows:repeat(6, var(--cell-board));
-  gap:var(--gap-board);
-  padding:var(--gap-board);
-  border-radius:18px;
-  background:var(--board);
-  box-shadow:0 16px 40px -16px var(--board-shadow);
-}
-.board{
-  --cell-board: calc(var(--cell) + 6px);
-  --gap-board: var(--gap); /* tu peux aussi faire +1px si besoin visuel */
+.drop-btn:hover{
+    background: #d1d5db;
 }
 
+/* Plateau (7x6) avec “trous” */
+.board{
+    display: grid;
+    grid-template-columns: repeat(7, var(--cell));
+    grid-template-rows: repeat(6, var(--cell));
+    gap: var(--gap);
+    padding: var(--gap);
+    border-radius: 18px;
+    background: var(--board);
+    box-shadow: 0 16px 40px -16px var(--board-shadow);
+}
+
+/* Une cellule : trou */
 .cell{
-  width:var(--cell-board);
-  height:var(--cell-board);
-  border-radius:50%;
-  background:var(--hole);
-  box-shadow:inset 0 2px 0 rgba(0,0,0,.08);
+    width: var(--cell);
+    height: var(--cell);
+    border-radius: 50%;
+    background: var(--hole);              /* vide par défaut */
+    box-shadow: inset 0 2px 0 rgba(0,0,0,0.08);
 }
-.cell.p1{ background:var(--p1); }
-.cell.p2{ background:var(--p2); }
+
+/* États remplis (tu appliqueras ces classes côté Go) */
+.cell.p1{ background: var(--p1); }
+.cell.p2{ background: var(--p2); }
+
+/* Footer */
+.site-footer{
+    margin-top: 16px;
+    color: var(--muted);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(7, 60px);
+  grid-template-rows: repeat(6, 60px);
+  gap: 6px;
+  padding: 10px;
+  background: #0b56b6;
+  border-radius: 12px;
+}
+.cell {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: #e9edf3;
+  box-shadow: inset 0 0 0 4px rgba(0,0,0,.08);
+}
+.p1 { background: #ff3b30; }   /* rouge */
+.p2 { background: #ffcc00; }   /* jaune */
+
 /* petite anim d’apparition */
-.cell.p1, .cell.p2{ animation:pop .15s ease-out; }
-@keyframes pop{ from{ transform:scale(.6); opacity:.2; } to{ transform:scale(1); opacity:1; } }
+.p1, .p2 { animation: pop .15s ease-out; }
+@keyframes pop { from { transform: scale(.6); opacity: .2; } to { transform: scale(1); opacity: 1; } }
 
 /* Responsive */
 @media (max-width: 900px){
-  :root{ --cell:64px; }
-  .game{ grid-template-columns:1fr; }
-  .panel{ position:static; }
+    :root{ --cell: 64px; }
+    .game{ grid-template-columns: 1fr; }
+    .panel{ position: static; }
 }
-@media (max-width:520px){
-  :root{ --cell:46px; --gap:8px; }
-  .drop-btn{ font-size:1rem; padding:6px 0; }
-  .btn{ width:100%; }
+@media (max-width: 520px){
+    :root{ --cell: 46px; --gap: 8px; }
+    .drop-btn{ font-size: 1rem; padding: 6px 0; }
 }

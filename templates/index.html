@@ -15,15 +15,15 @@
     </header>
 
     <main class="game">
-        <!-- Panneau latéral (état du jeu) -->
+        <!-- Panneau latéral : état du jeu -->
         <aside class="panel">
             <div class="status">
                 <span class="label">Tour :</span>
-                <span class="player-dot {{.TurnClass}}" aria-hidden="true"></span>
-                <span class="player-name" id="player-turn">{{.TurnName}}</span>
+                <span class="player-dot player1" aria-hidden="true"></span>
+                <span class="player-name" id="player-turn">Joueur Rouge</span>
             </div>
 
-            <!-- Message backend (victoire, égalité, je te fais pas un dessin) -->
+            <!-- Message backend (victoire, égalité, etc.) -->
             <p class="message">{{.Message}}</p>
 
             <div class="legend">
@@ -31,25 +31,26 @@
                 <div><span class="dot player2"></span> Jaune</div>
             </div>
 
+            <!-- Réinitialisation (tu pourras brancher sur /reset côté Go si besoin) -->
             <form action="/reset" method="POST" class="reset-form">
-                <button type="submit" class="btn btn-secondary">Réinitialiser</button>
+                <button type="submit" class="btn-secondary">Réinitialiser</button>
             </form>
         </aside>
 
         <!-- Zone de jeu -->
         <section class="board-area">
-            <!-- Déposer un pion par colonne -->
+            <!-- Rangée d’actions : déposer un pion par colonne -->
             <form class="play-controls" action="/turn" method="POST" aria-label="Choisir une colonne">
-                <button name="x" value="0" class="btn drop-btn" aria-label="Jouer en colonne 1" type="submit">▼ 1</button>
-                <button name="x" value="1" class="btn drop-btn" aria-label="Jouer en colonne 2" type="submit">▼ 2</button>
-                <button name="x" value="2" class="btn drop-btn" aria-label="Jouer en colonne 3" type="submit">▼ 3</button>
-                <button name="x" value="3" class="btn drop-btn" aria-label="Jouer en colonne 4" type="submit">▼ 4</button>
-                <button name="x" value="4" class="btn drop-btn" aria-label="Jouer en colonne 5" type="submit">▼ 5</button>
-                <button name="x" value="5" class="btn drop-btn" aria-label="Jouer en colonne 6" type="submit">▼ 6</button>
-                <button name="x" value="6" class="btn drop-btn" aria-label="Jouer en colonne 7" type="submit">▼ 7</button>
+                <button name="x" value="0" class="drop-btn" aria-label="Jouer en colonne 1" type="submit">▼ 1</button>
+                <button name="x" value="1" class="drop-btn" aria-label="Jouer en colonne 2" type="submit">▼ 2</button>
+                <button name="x" value="2" class="drop-btn" aria-label="Jouer en colonne 3" type="submit">▼ 3</button>
+                <button name="x" value="3" class="drop-btn" aria-label="Jouer en colonne 4" type="submit">▼ 4</button>
+                <button name="x" value="4" class="drop-btn" aria-label="Jouer en colonne 5" type="submit">▼ 5</button>
+                <button name="x" value="5" class="drop-btn" aria-label="Jouer en colonne 6" type="submit">▼ 6</button>
+                <button name="x" value="6" class="drop-btn" aria-label="Jouer en colonne 7" type="submit">▼ 7</button>
             </form>
 
-            <!-- Plateau 7 x 6 créé via le golang et importé dans le HTML -->
+            <!-- Plateau 7 x 6 (coordonnées en data-*) -->
             <div class="board" role="grid" aria-label="Plateau 7 colonnes par 6 lignes" id="tab">
                 {{.BoardHTML}}
             </div>
@@ -72,33 +73,10 @@
                         .catch(err => console.error('Error fetching color:', err));
                 }
 
-        const btns = document.querySelectorAll('.drop-btn');
-        btns.forEach((btn) => {
-        btn.addEventListener('click', changeColor);
+        btns = document.querySelectorAll('button[class=drop-btn]')
+        btns.forEach(btn => {
+	    btn.addEventListener("click", changeColor())
         });
-    </script>
-
-    <script>
-        (function () {
-        const firstBtn = document.querySelector('.drop-btn');
-        const bar = document.querySelector('.play-controls');
-        const board = document.querySelector('.board');
-        if (!firstBtn || !bar || !board) return;
-
-        const btnW = firstBtn.getBoundingClientRect().width;
-        const styles = getComputedStyle(bar);
-        const gap = parseFloat(styles.columnGap || styles.gap || 0);
-
-        board.style.setProperty('grid-template-columns', `repeat(7, ${btnW}px)`);
-        board.style.setProperty('grid-template-rows', `repeat(6, ${btnW}px)`);
-        board.style.setProperty('gap', `${gap}px`);
-        board.style.setProperty('padding', `${gap}px`);
-
-        board.querySelectorAll('.cell').forEach(c => {
-            c.style.width = btnW + 'px';
-            c.style.height = btnW + 'px';
-        });
-        })();
     </script>
 
 </body>
