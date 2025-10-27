@@ -14,6 +14,8 @@ var lastcol int
 type PageData struct {
 	Message   string
 	BoardHTML template.HTML
+	TurnName  string //red or yellow
+	TurnClass string //p1 or p2
 }
 
 type Color struct {
@@ -278,9 +280,19 @@ func renderBoard() template.HTML {
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/index.html"))
+
+	turnName := "Joueur Jaune"
+	turnClass := "p2"
+	if turn { //red's turn
+		turnName = "Joueur Rouge"
+		turnClass = "p1"
+	}
+
 	data := PageData{
 		Message:   "",
 		BoardHTML: renderBoard(),
+		TurnName:  turnName,
+		TurnClass: turnClass,
 	}
 	_ = tmpl.Execute(w, data)
 }
