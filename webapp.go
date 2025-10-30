@@ -12,7 +12,7 @@ var lastrow int
 var lastcol int
 var checkcursorx = 0
 var checkcursory = 0
-var istetris = false
+var istetris = true
 var redpoints = 0
 var yellowpoints = 0
 
@@ -89,15 +89,32 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 	x, err := strconv.Atoi(r.FormValue("x"))
 	if err == nil {
 		placepiece(x)
-		won := horizontalcheck(lastrow, !turn) || verticalcheck(x, !turn) || diagcheck(x, lastrow, !turn) || diagcheck2(x, lastrow, !turn)
-		if won {
-			if a[lastcol][lastrow] == 1 {
+		if istetris {
+			if redpoints >= 5 {
 				lastWinner = "Rouge"
-			} else {
+				http.Redirect(w, r, "/win", http.StatusSeeOther)
+				return
+			} else if yellowpoints >= 5 {
 				lastWinner = "Jaune"
+				http.Redirect(w, r, "/win", http.StatusSeeOther)
+				return
+			} else {
+				for range 4 {
+					tetrisendturn()
+				}
+				return
 			}
-			http.Redirect(w, r, "/win", http.StatusSeeOther)
-			return
+		} else {
+			won := horizontalcheck(lastrow, !turn) || verticalcheck(x, !turn) || diagcheck(x, lastrow, !turn) || diagcheck2(x, lastrow, !turn)
+			if won {
+				if a[lastcol][lastrow] == 1 {
+					lastWinner = "Rouge"
+				} else {
+					lastWinner = "Jaune"
+				}
+				http.Redirect(w, r, "/win", http.StatusSeeOther)
+				return
+			}
 		}
 	}
 	turn = !turn
@@ -344,10 +361,9 @@ func printBoard() {
 	fmt.Println()
 }
 
-func gravity_fix() { //fappeler cette fonction 5 fois au minimum si on veux que tout se passe bien
+func gravity_fix() { //appeler cette fonction 5 fois au minimum si on veux que tout se passe bien
 	tamp := 0
-	for x := 0; x <= 6; i++ {
-
+	for x := 0; x <= 6; x++ {
 		for i := 5; i > 0; i-- {
 			//on descend de 1 le pion ducoup
 			if a[x][i-1] == 0 {
@@ -370,6 +386,12 @@ func tetrisendturn() {
 		for i := 0; i < 5; i++ {
 			gravity_fix()
 		}
+		if turn {
+			redpoints++
+		} else {
+			yellowpoints++
+		}
+		return
 	}
 	if verticalcheck(lastcol, !turn) {
 		//enlever derriere le curseur
@@ -381,6 +403,45 @@ func tetrisendturn() {
 		for i := 0; i < 5; i++ {
 			gravity_fix()
 		}
+		if turn {
+			redpoints++
+		} else {
+			yellowpoints++
+		}
+		return
 	}
-
+	if diagcheck(lastcol, lastrow, !turn) {
+		for i := 0; i < 4; i++ {
+			a[checkcursorx][checkcursory] = 0
+			checkcursorx--
+			checkcursory++
+		}
+		//gravitas appellée 5 fois pour eviter pire edge case
+		for i := 0; i < 5; i++ {
+			gravity_fix()
+		}
+		if turn {
+			redpoints++
+		} else {
+			yellowpoints++
+		}
+		return
+	}
+	if diagcheck2(lastcol, lastrow, !turn) {
+		for i := 0; i < 4; i++ {
+			a[checkcursorx][checkcursory] = 0
+			checkcursorx++
+			checkcursory++
+		}
+		//gravitas appellée 5 fois pour eviter pire edge case
+		for i := 0; i < 5; i++ {
+			gravity_fix()
+		}
+		if turn {
+			redpoints++
+		} else {
+			yellowpoints++
+		}
+		return
+	}
 }
