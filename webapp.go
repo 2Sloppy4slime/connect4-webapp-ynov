@@ -90,6 +90,10 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		placepiece(x)
 		if istetris {
+			for range 4 {
+					tetrisendturn()
+				}
+				
 			if redpoints >= 5 {
 				lastWinner = "Rouge"
 				http.Redirect(w, r, "/win", http.StatusSeeOther)
@@ -98,12 +102,6 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 				lastWinner = "Jaune"
 				http.Redirect(w, r, "/win", http.StatusSeeOther)
 				return
-			} else {
-				for range 4 {
-					tetrisendturn()
-				}
-				return
-			}
 		} else {
 			won := horizontalcheck(lastrow, !turn) || verticalcheck(x, !turn) || diagcheck(x, lastrow, !turn) || diagcheck2(x, lastrow, !turn)
 			if won {
@@ -391,6 +389,8 @@ func tetrisendturn() {
 		} else {
 			yellowpoints++
 		}
+		print("redpoints : " + strconv.Itoa(redpoints))
+		print("yellowpoints : " + strconv.Itoa(yellowpoints))
 		return
 	}
 	if verticalcheck(lastcol, !turn) {
@@ -408,6 +408,8 @@ func tetrisendturn() {
 		} else {
 			yellowpoints++
 		}
+		print("redpoints : " + strconv.Itoa(redpoints))
+		print("yellowpoints : " + strconv.Itoa(yellowpoints))
 		return
 	}
 	if diagcheck(lastcol, lastrow, !turn) {
@@ -425,6 +427,8 @@ func tetrisendturn() {
 		} else {
 			yellowpoints++
 		}
+		print("redpoints : " + strconv.Itoa(redpoints))
+		print("yellowpoints : " + strconv.Itoa(yellowpoints))
 		return
 	}
 	if diagcheck2(lastcol, lastrow, !turn) {
@@ -433,6 +437,7 @@ func tetrisendturn() {
 			checkcursorx++
 			checkcursory++
 		}
+
 		//gravitas appellée 5 fois pour eviter pire edge case
 		for i := 0; i < 5; i++ {
 			gravity_fix()
@@ -442,6 +447,8 @@ func tetrisendturn() {
 		} else {
 			yellowpoints++
 		}
+		print("redpoints : " + strconv.Itoa(redpoints))
+		print("yellowpoints : " + strconv.Itoa(yellowpoints))
 		return
 	}
 }
