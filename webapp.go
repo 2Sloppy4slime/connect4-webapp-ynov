@@ -10,6 +10,11 @@ import (
 
 var lastrow int
 var lastcol int
+var checkcursorx = 0
+var checkcursory = 0
+var istetris = false
+var redpoints = 0
+var yellowpoints = 0
 
 type PageData struct {
 	Message   string
@@ -84,7 +89,7 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 	x, err := strconv.Atoi(r.FormValue("x"))
 	if err == nil {
 		placepiece(x)
-		won := horizontalcheck(lastrow, !turn) || verticalcheck(x, !turn) || diagcheck(x, lastrow, !turn)
+		won := horizontalcheck(lastrow, !turn) || verticalcheck(x, !turn) || diagcheck(x, lastrow, !turn) || diagcheck2(x, lastrow, !turn)
 		if won {
 			if a[lastcol][lastrow] == 1 {
 				lastWinner = "Rouge"
@@ -122,7 +127,8 @@ func placepiece(x int) {
 func horizontalcheck(y int, col bool) bool {
 	acc := 0
 	red := false
-	for _, v := range a {
+	checkcursory = y
+	for i, v := range a {
 		if acc == 4 {
 			if red == col {
 				return true
@@ -149,6 +155,7 @@ func horizontalcheck(y int, col bool) bool {
 		} else if (!red && v[y] == 1) || (red && v[y] == 2) {
 			acc++
 		}
+		checkcursorx = i
 	}
 	return false
 }
@@ -156,6 +163,7 @@ func horizontalcheck(y int, col bool) bool {
 func verticalcheck(x int, col bool) bool {
 	acc := 0
 	red := false
+	checkcursorx = x
 	for i := 0; i <= 5; i++ {
 		if acc == 4 {
 			if red == col {
@@ -183,16 +191,18 @@ func verticalcheck(x int, col bool) bool {
 		} else if (!red && a[x][i] == 1) || (red && a[x][i] == 2) {
 			acc++
 		}
+		checkcursory = i
 	}
 	return false
 }
-
-func diagcheck(x, y int, col bool) bool {
+func diagcheck2(x, y int, col bool) bool { // dans ce sens / de haut en bas
 	check, check2 := x, y
-	for check > 0 && check2 < 5 {
-		check--
+	for check < 6 && check2 < 5 {
+		check++
 		check2++
 	}
+	checkcursorx = x
+	checkcursory = y
 	acc, red := 0, false
 	for check >= 0 && check < 7 && check2 >= 0 && check2 < 6 {
 		if acc == 4 {
@@ -215,20 +225,29 @@ func diagcheck(x, y int, col bool) bool {
 		} else if (!red && v == 1) || (red && v == 2) {
 			acc++
 		}
-		check++
+		checkcursorx = check
+		checkcursory = check2
+		check--
 		check2--
 	}
 	if acc == 4 {
 		return red == col
 	}
 
-	check, check2 = x, y
-	for check < 6 && check2 < 5 {
-		check++
+	return false
+}
+
+func diagcheck(x, y int, col bool) bool {
+	check, check2 := x, y
+	checkcursorx = x
+	checkcursory = y
+	for check > 0 && check2 < 5 {
+		check--
 		check2++
 	}
-	acc, red = 0, false
+	acc, red := 0, false
 	for check >= 0 && check < 7 && check2 >= 0 && check2 < 6 {
+
 		if acc == 4 {
 			return red == col
 		}
@@ -249,13 +268,14 @@ func diagcheck(x, y int, col bool) bool {
 		} else if (!red && v == 1) || (red && v == 2) {
 			acc++
 		}
-		check--
+		checkcursorx = check
+		checkcursory = check2
+		check++
 		check2--
 	}
 	if acc == 4 {
 		return red == col
 	}
-
 	return false
 }
 
@@ -322,4 +342,45 @@ func printBoard() {
 		fmt.Println()
 	}
 	fmt.Println()
+}
+
+func gravity_fix() { //fappeler cette fonction 5 fois au minimum si on veux que tout se passe bien
+	tamp := 0
+	for x := 0; x <= 6; i++ {
+
+		for i := 5; i > 0; i-- {
+			//on descend de 1 le pion ducoup
+			if a[x][i-1] == 0 {
+				tamp = a[x][i]
+				a[x][i] = 0
+				a[x][i-1] = tamp
+			}
+		}
+	}
+}
+
+func tetrisendturn() {
+	if horizontalcheck(lastrow, !turn) {
+		//enlever derriere le curseur
+		for i := 0; i < 4; i++ {
+			a[checkcursorx][checkcursory] = 0
+			checkcursorx--
+		}
+		//gravitas appellée 5 fois pour eviter pire edge case
+		for i := 0; i < 5; i++ {
+			gravity_fix()
+		}
+	}
+	if verticalcheck(lastcol, !turn) {
+		//enlever derriere le curseur
+		for i := 0; i < 4; i++ {
+			a[checkcursorx][checkcursory] = 0
+			checkcursory--
+		}
+		//gravitas appellée 5 fois pour eviter pire edge case
+		for i := 0; i < 5; i++ {
+			gravity_fix()
+		}
+	}
+
 }
