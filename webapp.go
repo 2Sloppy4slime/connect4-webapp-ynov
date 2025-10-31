@@ -91,27 +91,31 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 		placepiece(x)
 		if istetris {
 			for range 4 {
-					tetrisendturn()
-				}
-				
+				tetrisendturn()
+			}
+
 			if redpoints >= 5 {
 				lastWinner = "Rouge"
 				http.Redirect(w, r, "/win", http.StatusSeeOther)
+				turn = !turn
 				return
 			} else if yellowpoints >= 5 {
 				lastWinner = "Jaune"
 				http.Redirect(w, r, "/win", http.StatusSeeOther)
+				turn = !turn
 				return
-		} else {
-			won := horizontalcheck(lastrow, !turn) || verticalcheck(x, !turn) || diagcheck(x, lastrow, !turn) || diagcheck2(x, lastrow, !turn)
-			if won {
-				if a[lastcol][lastrow] == 1 {
-					lastWinner = "Rouge"
-				} else {
-					lastWinner = "Jaune"
+			} else {
+				won := horizontalcheck(lastrow, !turn) || verticalcheck(x, !turn) || diagcheck(x, lastrow, !turn) || diagcheck2(x, lastrow, !turn)
+				if won {
+					if a[lastcol][lastrow] == 1 {
+						lastWinner = "Rouge"
+					} else {
+						lastWinner = "Jaune"
+					}
+					http.Redirect(w, r, "/win", http.StatusSeeOther)
+					turn = !turn
+					return
 				}
-				http.Redirect(w, r, "/win", http.StatusSeeOther)
-				return
 			}
 		}
 	}
