@@ -89,11 +89,17 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 	x, err := strconv.Atoi(r.FormValue("x"))
 	if err == nil {
 		placepiece(x)
+		print(istetris)
 		if istetris {
-			for range 4 {
-				tetrisendturn()
+			rp, yp := redpoints, yellowpoints
+			tetrisendturn(lastrow, lastcol)
+			if rp < redpoints || yp < yellowpoints {
+				for i := range 6 {
+					for y := range 5 {
+						tetrisendturn(i, y)
+					}
+				}
 			}
-
 			if redpoints >= 5 {
 				lastWinner = "Rouge"
 				http.Redirect(w, r, "/win", http.StatusSeeOther)
@@ -377,9 +383,10 @@ func gravity_fix() { //appeler cette fonction 5 fois au minimum si on veux que t
 	}
 }
 
-func tetrisendturn() {
-	if horizontalcheck(lastrow, !turn) {
+func tetrisendturn(x, y int) {
+	if horizontalcheck(x, !turn) {
 		//enlever derriere le curseur
+		print("killed horizontal...")
 		for i := 0; i < 4; i++ {
 			a[checkcursorx][checkcursory] = 0
 			checkcursorx--
@@ -397,7 +404,7 @@ func tetrisendturn() {
 		print("yellowpoints : " + strconv.Itoa(yellowpoints))
 		return
 	}
-	if verticalcheck(lastcol, !turn) {
+	if verticalcheck(y, !turn) {
 		//enlever derriere le curseur
 		for i := 0; i < 4; i++ {
 			a[checkcursorx][checkcursory] = 0
@@ -416,7 +423,7 @@ func tetrisendturn() {
 		print("yellowpoints : " + strconv.Itoa(yellowpoints))
 		return
 	}
-	if diagcheck(lastcol, lastrow, !turn) {
+	if diagcheck(y, x, !turn) {
 		for i := 0; i < 4; i++ {
 			a[checkcursorx][checkcursory] = 0
 			checkcursorx--
@@ -435,7 +442,7 @@ func tetrisendturn() {
 		print("yellowpoints : " + strconv.Itoa(yellowpoints))
 		return
 	}
-	if diagcheck2(lastcol, lastrow, !turn) {
+	if diagcheck2(y, x, !turn) {
 		for i := 0; i < 4; i++ {
 			a[checkcursorx][checkcursory] = 0
 			checkcursorx++
