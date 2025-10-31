@@ -27,9 +27,16 @@
             <p class="message">{{.Message}}</p>
 
             <div class="legend">
-                <div><span class="dot player1"></span> Rouge</div>
-                <div><span class="dot player2"></span> Jaune</div>
+                <div>
+                    <span class="dot player1"></span>
+                    Rouge — <strong>{{.Redpoints}}</strong> Tetris
+                </div>
+                <div>
+                    <span class="dot player2"></span>
+                    Jaune — <strong>{{.Yellowpoints}}</strong> Tetris
+                </div>
             </div>
+
 
             <form action="/reset" method="POST" class="reset-form">
                 <button type="submit" class="btn btn-secondary">Réinitialiser</button>

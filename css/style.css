@@ -146,6 +146,11 @@ body{
   --gap-board: var(--gap); /* tu peux aussi faire +1px si besoin visuel */
 }
 
+.legend strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
 .cell{
   width:var(--cell-board);
   height:var(--cell-board);

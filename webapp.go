@@ -17,10 +17,12 @@ var redpoints = 0
 var yellowpoints = 0
 
 type PageData struct {
-	Message   string
-	BoardHTML template.HTML
-	TurnName  string //red or yellow
-	TurnClass string //p1 or p2
+	Message      string
+	BoardHTML    template.HTML
+	TurnName     string //red or yellow
+	TurnClass    string //p1 or p2
+	Redpoints    int
+	Yellowpoints int
 }
 
 type Color struct {
@@ -328,16 +330,18 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 
 	turnName := "Joueur Jaune"
 	turnClass := "p2"
-	if turn { //red's turn
+	if turn {
 		turnName = "Joueur Rouge"
 		turnClass = "p1"
 	}
 
 	data := PageData{
-		Message:   "",
-		BoardHTML: renderBoard(),
-		TurnName:  turnName,
-		TurnClass: turnClass,
+		Message:      "",
+		BoardHTML:    renderBoard(),
+		TurnName:     turnName,
+		TurnClass:    turnClass,
+		Redpoints:    redpoints,
+		Yellowpoints: yellowpoints,
 	}
 	_ = tmpl.Execute(w, data)
 }
@@ -350,6 +354,12 @@ func reset(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		turn = false
+		lastcol, lastrow = 0, 0
+		istetris = true
+
+		redpoints = 0
+		yellowpoints = 0
+		lastWinner = ""
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
