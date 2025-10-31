@@ -37,6 +37,12 @@
                 </div>
             </div>
 
+            <form action="/togglemode" method="POST" class="toggle-form">
+                <button type="submit" class="btn btn-secondary">
+                    Mode actuel : {{if .TetrisMode}}Tetris{{else}}Classique{{end}}
+                </button>
+            </form>
+
 
             <form action="/reset" method="POST" class="reset-form">
                 <button type="submit" class="btn btn-secondary">Réinitialiser</button>

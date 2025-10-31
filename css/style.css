@@ -151,6 +151,11 @@ body{
   font-weight: 700;
 }
 
+.toggle-form {
+  margin-bottom: 10px;
+  display: flex;
+}
+
 .cell{
   width:var(--cell-board);
   height:var(--cell-board);

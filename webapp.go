@@ -15,6 +15,7 @@ var checkcursory = 0
 var istetris = true
 var redpoints = 0
 var yellowpoints = 0
+var tetrisMode = true
 
 type PageData struct {
 	Message      string
@@ -23,6 +24,7 @@ type PageData struct {
 	TurnClass    string //p1 or p2
 	Redpoints    int
 	Yellowpoints int
+	TetrisMode   bool
 }
 
 type Color struct {
@@ -54,6 +56,7 @@ func main() {
 	http.HandleFunc("/pos", getpos)
 	http.HandleFunc("/reset", reset)
 	http.HandleFunc("/win", winPage)
+	http.HandleFunc("/togglemode", toggleMode)
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -89,47 +92,55 @@ func DoTurn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	x, err := strconv.Atoi(r.FormValue("x"))
-	if err == nil {
-		placepiece(x)
-		print(istetris)
-		if istetris {
-			rp, yp := redpoints, yellowpoints
-			tetrisendturn(lastrow, lastcol)
-			if rp < redpoints || yp < yellowpoints {
-				for i := range 6 {
-					for y := range 5 {
-						tetrisendturn(i, y)
-					}
-				}
-			}
-			if redpoints >= 5 {
-				lastWinner = "Rouge"
-				http.Redirect(w, r, "/win", http.StatusSeeOther)
-				turn = !turn
-				return
-			} else if yellowpoints >= 5 {
-				lastWinner = "Jaune"
-				http.Redirect(w, r, "/win", http.StatusSeeOther)
-				turn = !turn
-				return
-			} else {
-				won := horizontalcheck(lastrow, !turn) || verticalcheck(x, !turn) || diagcheck(x, lastrow, !turn) || diagcheck2(x, lastrow, !turn)
-				if won {
-					if a[lastcol][lastrow] == 1 {
-						lastWinner = "Rouge"
-					} else {
-						lastWinner = "Jaune"
-					}
-					http.Redirect(w, r, "/win", http.StatusSeeOther)
-					turn = !turn
-					return
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	placepiece(x)
+
+	if tetrisMode && istetris {
+		rp, yp := redpoints, yellowpoints
+		tetrisendturn(lastrow, lastcol)
+
+		if rp < redpoints || yp < yellowpoints {
+			for i := 0; i < 6; i++ {
+				for y := 0; y < 5; y++ {
+					tetrisendturn(i, y)
 				}
 			}
 		}
+
+		if redpoints >= 5 {
+			lastWinner = "Rouge"
+			http.Redirect(w, r, "/win", http.StatusSeeOther)
+			turn = !turn
+			return
+		} else if yellowpoints >= 5 {
+			lastWinner = "Jaune"
+			http.Redirect(w, r, "/win", http.StatusSeeOther)
+			turn = !turn
+			return
+		}
 	}
-	turn = !turn
-	print("error ntm touche pas a mon code connard de tes morts\n")
+
+	won := horizontalcheck(lastrow, !turn) ||
+		verticalcheck(x, !turn) ||
+		diagcheck(x, lastrow, !turn) ||
+		diagcheck2(x, lastrow, !turn)
+
+	if won {
+		if a[lastcol][lastrow] == 1 {
+			lastWinner = "Rouge"
+		} else {
+			lastWinner = "Jaune"
+		}
+		http.Redirect(w, r, "/win", http.StatusSeeOther)
+		turn = !turn
+		return
+	}
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+	turn = !turn
 }
 
 func placepiece(x int) {
@@ -306,6 +317,13 @@ func diagcheck(x, y int, col bool) bool {
 	return false
 }
 
+func toggleMode(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		tetrisMode = !tetrisMode
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
 func renderBoard() template.HTML {
 	var sb strings.Builder
 
@@ -342,6 +360,7 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 		TurnClass:    turnClass,
 		Redpoints:    redpoints,
 		Yellowpoints: yellowpoints,
+		TetrisMode:   tetrisMode,
 	}
 	_ = tmpl.Execute(w, data)
 }
