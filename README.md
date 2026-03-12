@@ -1,2 +1,3 @@
 # ynov_power4-web
-puissance4 web golang ynov
+Connect4 web golang ynov
+School Project
